@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:medsi/models/facility_model.dart';
 import 'dart:convert';
 import 'dart:developer';
 
@@ -10,6 +11,10 @@ class MedicationList with ChangeNotifier {
 
   Future<void> getMedList({bool notify_listeners = true}) async {
     dynamic ListOfMeds = await medsiStorage.read(key: "MedsList");
+
+    if (ListOfMeds.toString() == "null") {
+      return;
+    }
 
     var ListOfMedsConvi = json.decode(ListOfMeds);
     Map<String, dynamic> ListOfMedsConv =
@@ -24,32 +29,36 @@ class MedicationList with ChangeNotifier {
             facility.containsKey("Facility") &&
             facility.containsKey("TimeOfQuery") &&
             facility.containsKey("MedsList")) {
-          Map<String, dynamic> medsList =
-              Map<String, dynamic>.from(facility["MedsList"]);
-          medsList.forEach((ki, dynamic med) {
-            holder.add(MedicationProvider(
-                MedicationNo: med["medicationNo"].toString(),
-                facility: facility["Facility"].toString(),
-                medicationText: med["medicationText"].toString(),
-                status: med["status"].toString(),
-                intent: med["intent"].toString(),
-                generic: med["generic"].toString(),
-                brand: med["brand"].toString(),
-                pack: med["pack"].toString(),
-                route: med["route"].toString(),
-                strength: med["strength"].toString(),
-                form: med["form"].toString(),
-                frequency: med["frequency"].toString(),
-                frequencyText: med["frequencyText"].toString(),
-                frequencyFHIRTimingRepeatObject: Map<String, dynamic>.from(
-                    med["frequencyFHIRTimingRepeatObject"]),
-                duration: int.parse(med["duration"].toString()),
-                durationunit: med["durationunit"].toString(),
-                prescriber: med["prescriber"].toString(),
-                prescriptionNo: med["prescriptionNo"].toString(),
-                startdatetime: med["startdatetime"].toString(),
-                lastqueried: facility["TimeOfQuery"].toString(),
-                ImageURL: med["ImageURL"].toString()));
+          Facility.facilityStillExists(facility["Facility"]).then((valuebool) {
+            if (valuebool) {
+              Map<String, dynamic> medsList =
+                  Map<String, dynamic>.from(facility["MedsList"]);
+              medsList.forEach((ki, dynamic med) {
+                holder.add(MedicationProvider(
+                    MedicationNo: med["medicationNo"].toString(),
+                    facility: facility["Facility"].toString(),
+                    medicationText: med["medicationText"].toString(),
+                    status: med["status"].toString(),
+                    intent: med["intent"].toString(),
+                    generic: med["generic"].toString(),
+                    brand: med["brand"].toString(),
+                    pack: med["pack"].toString(),
+                    route: med["route"].toString(),
+                    strength: med["strength"].toString(),
+                    form: med["form"].toString(),
+                    frequency: med["frequency"].toString(),
+                    frequencyText: med["frequencyText"].toString(),
+                    frequencyFHIRTimingRepeatObject: Map<String, dynamic>.from(
+                        med["frequencyFHIRTimingRepeatObject"]),
+                    duration: int.parse(med["duration"].toString()),
+                    durationunit: med["durationunit"].toString(),
+                    prescriber: med["prescriber"].toString(),
+                    prescriptionNo: med["prescriptionNo"].toString(),
+                    startdatetime: med["startdatetime"].toString(),
+                    lastqueried: facility["TimeOfQuery"].toString(),
+                    ImageURL: med["ImageURL"].toString()));
+              });
+            }
           });
         }
       });

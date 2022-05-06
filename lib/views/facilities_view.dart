@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:medsi/logger/logger.dart';
+import 'package:medsi/models/facility_model.dart';
 import 'package:medsi/views/medication_list_view.dart';
 import 'package:medsi/widgets/common_widgets.dart';
 import 'package:medsi/views/logon_view.dart';
 import 'package:medsi/widgets/facilities_list.dart';
 import 'package:medsi/widgets/error_widget.dart';
+import 'package:medsi/widgets/facility_detail.dart';
 
 class FacilitiesView extends StatelessWidget {
   static const routeName = "Facilities";
@@ -20,22 +22,28 @@ class FacilitiesView extends StatelessWidget {
 
       if (Platform.isAndroid) {
         FacilitiesList = Scaffold(
-            appBar: AppBar(
-              title: const Text("Medsi"),
-              actions: [
-                IconButton(
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushReplacementNamed(MedicationListView.routeName);
-                    },
-                    icon: const Icon(Icons.medication)),
-                IconButton(
-                    onPressed: (() => Navigator.of(context)
-                        .pushReplacementNamed(MedsiLogonView.routeName)),
-                    icon: const Icon(Icons.logout))
-              ],
-            ),
-            body: FacilitiesListAndroid());
+          appBar: AppBar(
+            title: const Text("Medsi"),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    Navigator.of(context)
+                        .pushReplacementNamed(MedicationListView.routeName);
+                  },
+                  icon: const Icon(Icons.medication)),
+              IconButton(
+                  onPressed: (() => Navigator.of(context)
+                      .pushReplacementNamed(MedsiLogonView.routeName)),
+                  icon: const Icon(Icons.logout)),
+            ],
+          ),
+          body: const FacilitiesListAndroid(),
+          floatingActionButton: FloatingActionButton(
+              child: const Icon(Icons.add),
+              onPressed: (() => Navigator.of(context).pushNamed(
+                  FacilityDetail.routeName,
+                  arguments: Facility("", "", "", "", "")))),
+        );
       } else if (Platform.isIOS) {
         FacilitiesList = CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(

@@ -24,51 +24,53 @@ class MedicationListProcess {
 
   static Future<void> getPatientId(
       String patientUrl, String patientIdentifier, String facilityKey) async {
-    MedsiHttp patientRequest = MedsiHttp(
-        Uri.parse(patientUrl + patientIdentifier), {}, (ajaxResponse1) {
-      if (ajaxResponse1.statusCode == 200) {
-        Map<String, dynamic> patDataMap = json.decode(ajaxResponse1.body);
-        FHIRBundle patientBundle = FHIRBundle(patDataMap);
+    try {
+      MedsiHttp patientRequest = MedsiHttp(
+          Uri.parse(patientUrl + patientIdentifier), {}, (ajaxResponse1) {
+        if (ajaxResponse1.statusCode == 200) {
+          Map<String, dynamic> patDataMap = json.decode(ajaxResponse1.body);
+          FHIRBundle patientBundle = FHIRBundle(patDataMap);
 
-        patientBundle.validate().then((val) {
-          if ((patientBundle.isvalid) &&
-              (List.from(patDataMap["entry"]).length == 1)) {
-            FHIRPatientRequest PatientRequest =
-                FHIRPatientRequest(patDataMap["entry"][0]);
-            PatientRequest.validate().then((value) {
-              if (PatientRequest.isvalid) {
-                String patientId = patDataMap["entry"][0]["resource"]["id"];
+          patientBundle.validate().then((val) {
+            if ((patientBundle.isvalid) &&
+                (List.from(patDataMap["entry"]).length == 1)) {
+              FHIRPatientRequest PatientRequest =
+                  FHIRPatientRequest(patDataMap["entry"][0]);
+              PatientRequest.validate().then((value) {
+                if (PatientRequest.isvalid) {
+                  String patientId = patDataMap["entry"][0]["resource"]["id"];
 
-                medsiStorage.read(key: "Facilities").then((Facilitiesvalue) {
-                  List<dynamic> FacilitiesMap = List<dynamic>.from(
-                      json.decode(Facilitiesvalue.toString()));
-                  Map<String, dynamic> currentFacility =
-                      FacilitiesMap.firstWhere((element) =>
-                          Map<String, dynamic>.from(element)["name"] ==
-                          facilityKey);
+                  medsiStorage.read(key: "Facilities").then((Facilitiesvalue) {
+                    List<dynamic> FacilitiesMap = List<dynamic>.from(
+                        json.decode(Facilitiesvalue.toString()));
+                    Map<String, dynamic> currentFacility =
+                        FacilitiesMap.firstWhere((element) =>
+                            Map<String, dynamic>.from(element)["name"] ==
+                            facilityKey);
 
-                  currentFacility["patientId"] = patientId;
-                  FacilitiesMap.removeWhere((element) =>
-                      Map<String, dynamic>.from(element)["name"] ==
-                      facilityKey);
-                  FacilitiesMap.add(currentFacility);
+                    currentFacility["patientId"] = patientId;
+                    FacilitiesMap.removeWhere((element) =>
+                        Map<String, dynamic>.from(element)["name"] ==
+                        facilityKey);
+                    FacilitiesMap.add(currentFacility);
 
-                  medsiStorage.write(
-                      key: "Facilities", value: json.encode(FacilitiesMap));
-                });
-              } else {
-                log(PatientRequest.ErrorMessage.toString());
-              }
-            });
-          } else {
-            log(patientBundle.ErrorMessage.toString());
-          }
-        });
-      } else {
-        log("error fetching patient id");
-      }
-    });
-    patientRequest.get();
+                    medsiStorage.write(
+                        key: "Facilities", value: json.encode(FacilitiesMap));
+                  });
+                } else {
+                  log(PatientRequest.ErrorMessage.toString());
+                }
+              });
+            } else {
+              log(patientBundle.ErrorMessage.toString());
+            }
+          });
+        } else {
+          log("error fetching patient id");
+        }
+      });
+      patientRequest.get();
+    } catch (e) {}
   }
 
   static Future<void> processMedsLoop(

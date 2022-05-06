@@ -1,6 +1,12 @@
-import 'package:flutter/foundation.dart';
+import 'dart:developer';
 
-class Facility with ChangeNotifier {
+import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
+import 'dart:convert';
+
+import 'package:medsi/models/storage_utils.dart';
+
+class Facility {
   String name = "";
   String authenticationurl = "";
   String medrequesturl = "";
@@ -14,5 +20,22 @@ class Facility with ChangeNotifier {
     this.name = pname;
     this.patientidentifier = ppatientidentifier;
     this.patientidurl = ppatientidurl;
+  }
+
+  static Future<bool> facilityStillExists(String targetName) async {
+    bool retVal = true;
+    await medsiStorage.read(key: "Facilities").then((rawFacilites) {
+      List<dynamic> parsedFacilities = rawFacilites.toString() != "null"
+          ? json.decode(rawFacilites.toString())
+          : [];
+
+      parsedFacilities.firstWhere(
+        (element) => element["name"] == targetName,
+        orElse: () => retVal = false,
+      );
+
+      return retVal;
+    });
+    return retVal;
   }
 }

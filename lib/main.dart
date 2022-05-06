@@ -13,6 +13,8 @@ import 'package:medsi/models/storage_utils.dart';
 import 'package:medsi/tasks/background_handle.dart';
 import 'package:medsi/views/medication_list_view.dart';
 import 'package:medsi/views/facilities_view.dart';
+import 'package:medsi/widgets/facility_detail.dart';
+import 'package:medsi/models/facility_model.dart';
 
 MedicationList MedicationListObj = MedicationList();
 
@@ -26,10 +28,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    storagestub(); //temporary
+    runInitialStorage();
 
     //provider refresh timers
-    Timer.periodic(Duration(seconds: 1), (Timer anonymus) {
+    Timer.periodic(const Duration(seconds: 5), (Timer anonymus) {
       MedicationListObj.getMedList();
     });
     //
@@ -41,6 +43,7 @@ class MyApp extends StatelessWidget {
       MedicationListView.routeName: (context) => MedicationListView(),
       MedsiLogonView.routeName: (context) => MedsiLogonView(),
       FacilitiesView.routeName: (context) => FacilitiesView(),
+      FacilityDetail.routeName: (context) => FacilityDetail(),
     };
 
     Auth AuthObj = Auth();

@@ -70,7 +70,7 @@ class AdministrationListProcess {
                 .parse(thisMedItmNxtAdmin)
                 .toLocal()
                 .difference(DateTime.now())
-                .inMicroseconds) <=
+                .inMilliseconds) <=
             900000) {
           this.currentAdministrationList.add({
             medItem.medicationText.toString():

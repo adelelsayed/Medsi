@@ -3,10 +3,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 
 //secure storage
-const medsiStorage = FlutterSecureStorage();
+const FlutterSecureStorage medsiStorage = FlutterSecureStorage();
 
 //temporary stub till server sude
-void storagestub() async {
+void runInitialStorage() async {
   medsiStorage.write(
       key: "SupportUrl", value: "http://192.168.0.128:8000/medsibe/support");
 
@@ -42,6 +42,7 @@ void storagestub() async {
         }
       ]));
   */
+
   medsiStorage.write(
       key: "JsonValidationSchemes",
       value: json.encode({

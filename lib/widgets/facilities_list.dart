@@ -8,17 +8,18 @@ import 'package:medsi/widgets/facility_widget.dart';
 import 'package:medsi/provider_utils/facilities_provider.dart';
 
 class FacilitiesListAndroid extends StatelessWidget {
+  const FacilitiesListAndroid({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final facilitiesListObj = Provider.of<FacilitiesProvider>(context);
-
+    //log(facilitiesListObj.facilities.length.toString());
     return Column(
       children: [
         Expanded(
           child: ListView.builder(
-            itemBuilder: (ctx, indx) => Container(
-              child: FacilityWidget(
-                  facilityObj: facilitiesListObj.facilities[indx]),
+            itemBuilder: (context, index) => FacilityWidget(
+              facilityObj: facilitiesListObj.facilities[index],
+              facilitiesListObjProv: facilitiesListObj,
             ),
             itemCount: facilitiesListObj.facilities.length,
             scrollDirection: Axis.vertical,
