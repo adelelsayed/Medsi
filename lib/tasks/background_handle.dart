@@ -20,12 +20,14 @@ void mainWorkMgrCall(List<Map<String, Object>> medsiTasks) {
 
 import 'dart:developer';
 import 'dart:ui';
+import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:medsi/tasks/logon_process.dart';
 
 import 'package:medsi/tasks/medication_list_fetch_process.dart';
-import 'package:medsi/models/storage_utils.dart';
+import 'package:medsi/models/system_settings.dart';
 import 'package:medsi/logger/logger.dart';
 import 'package:medsi/tasks/dose_notification_process.dart';
 
@@ -61,40 +63,42 @@ class BackGroundServiceMgr {
 void operatorForIsolates() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  int medInterval = 0;
-  int admInterval = 0;
-  MedicationListProcess.getintervalMinutes().then((value) {
-    medInterval = value;
-
-    AdministrationListProcess.getintervalMinutes().then((value) {
-      admInterval = value;
-
-      List<Map<String, Map<int, List<Future<void> Function()>>>> listToRun = [
-        {
-          "medication_list_fetch_process": {
-            medInterval * 60: [MedicationListProcess.getMedsListOnce]
-          }
-        },
-        {
-          "getNotification": {
-            admInterval * 60: [AdministrationListProcess.getNotification]
-          }
+  Settings.getSystemIntervals().then((settingsObj) {
+    List<Map<String, Map<int, List<Future<void> Function()>>>> listToRun = [
+      {
+        "medication_list_fetch_process": {
+          settingsObj.medicationListProcessIntervalMinutes * 60: [
+            MedicationListProcess.getMedsListOnce
+          ]
         }
-      ];
-
-      for (var taskMap in listToRun) {
-        Map<String, Map<int, List<Future<void> Function()>>> currentTaskMap =
-            taskMap;
-        String currentTaskName = currentTaskMap.keys.first;
-        int currentIntervalSeconds = currentTaskMap.values.first.keys.first;
-        Future<void> Function() currentPrimaryFunction =
-            currentTaskMap.values.first.values.first[0];
-
-        Timer.periodic(Duration(seconds: currentIntervalSeconds),
-            (Timer anonymus) {
-          currentPrimaryFunction();
-        });
+      },
+      {
+        "getNotification": {
+          settingsObj.administrationListIntervalMinutes * 60: [
+            AdministrationListProcess.getNotification
+          ]
+        }
+      },
+      {
+        "logonProcess": {
+          settingsObj.logonProcessIntervalMinutes * 60: [logonCallback]
+        }
       }
-    });
+    ];
+
+    for (var taskMap in listToRun) {
+      Map<String, Map<int, List<Future<void> Function()>>> currentTaskMap =
+          taskMap;
+      String currentTaskName = currentTaskMap.keys.first;
+      log(currentTaskName.toString());
+      int currentIntervalSeconds = currentTaskMap.values.first.keys.first;
+      Future<void> Function() currentPrimaryFunction =
+          currentTaskMap.values.first.values.first[0];
+
+      Timer.periodic(Duration(seconds: currentIntervalSeconds),
+          (Timer anonymus) {
+        currentPrimaryFunction();
+      });
+    }
   });
 }

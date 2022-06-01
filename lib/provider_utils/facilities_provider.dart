@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:medsi/tasks/logon_process.dart';
 import 'dart:convert';
 import 'dart:developer';
 
@@ -22,7 +23,9 @@ class FacilitiesProvider with ChangeNotifier {
             rawFacility["authenticationurl"],
             rawFacility["medrequesturl"],
             rawFacility["patientidurl"],
-            rawFacility["patientidentifier"]);
+            rawFacility["patientidentifier"],
+            rawFacility["facilityusername"],
+            rawFacility["facilitypassword"]);
 
         facilities.add(currentFacility);
         notifyListeners();
@@ -65,7 +68,9 @@ class FacilitiesProvider with ChangeNotifier {
           "authenticationurl": newFacilityObjToUpdate.authenticationurl,
           "medrequesturl": newFacilityObjToUpdate.medrequesturl,
           "patientidurl": newFacilityObjToUpdate.patientidurl,
-          "patientidentifier": newFacilityObjToUpdate.patientidentifier
+          "patientidentifier": newFacilityObjToUpdate.patientidentifier,
+          "facilityusername": newFacilityObjToUpdate.facilityUserName,
+          "facilitypassword": newFacilityObjToUpdate.facilityPassWord,
         };
 
         parsedFacilities.isNotEmpty
@@ -77,12 +82,14 @@ class FacilitiesProvider with ChangeNotifier {
       medsiStorage
           .write(key: "Facilities", value: json.encode(parsedFacilities))
           .then((value) {
-        this.facilities.remove(oldFacilityObjToUpdate);
-        MedicationListProcess.getPatientId(newFacility["patientidurl"],
-                newFacility["patientidentifier"], newFacility["name"])
-            .then((value) {
-          notifyListeners();
-          getFacilites();
+        logonCallback().then((value) {
+          this.facilities.remove(oldFacilityObjToUpdate);
+          MedicationListProcess.getPatientId(newFacility["patientidurl"],
+                  newFacility["patientidentifier"], newFacility["name"])
+              .then((value) {
+            notifyListeners();
+            getFacilites();
+          });
         });
       });
     });

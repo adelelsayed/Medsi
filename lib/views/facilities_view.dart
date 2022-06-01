@@ -42,7 +42,7 @@ class FacilitiesView extends StatelessWidget {
               child: const Icon(Icons.add),
               onPressed: (() => Navigator.of(context).pushNamed(
                   FacilityDetail.routeName,
-                  arguments: Facility("", "", "", "", "")))),
+                  arguments: Facility("", "", "", "", "", "", "")))),
         );
       } else if (Platform.isIOS) {
         FacilitiesList = CupertinoPageScaffold(

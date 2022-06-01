@@ -13,6 +13,8 @@ class FacilityDetail extends StatelessWidget {
   TextEditingController patientidurlController = TextEditingController();
   TextEditingController authenticationurlController = TextEditingController();
   TextEditingController medrequesturlController = TextEditingController();
+  TextEditingController facilityUserNameController = TextEditingController();
+  TextEditingController facilityPassWordController = TextEditingController();
 
   late Facility facilityObj;
 
@@ -33,6 +35,10 @@ class FacilityDetail extends StatelessWidget {
         TextEditingController(text: facilityObject.patientidentifier);
     this.patientidurlController =
         TextEditingController(text: facilityObject.patientidurl);
+    this.facilityUserNameController =
+        TextEditingController(text: facilityObject.facilityUserName);
+    this.facilityPassWordController =
+        TextEditingController(text: facilityObject.facilityPassWord);
 
     return Scaffold(
       appBar: AppBar(title: const Text("Medsi")),
@@ -77,6 +83,17 @@ class FacilityDetail extends StatelessWidget {
                     }),
                 TextFormField(
                     decoration: const InputDecoration(
+                        labelText: "Medication List URL",
+                        icon: Icon(Icons.link)),
+                    controller: medrequesturlController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter Medication List URL';
+                      }
+                      return null;
+                    }),
+                TextFormField(
+                    decoration: const InputDecoration(
                         labelText: "Authentication URL",
                         icon: Icon(Icons.link)),
                     controller: authenticationurlController,
@@ -88,12 +105,22 @@ class FacilityDetail extends StatelessWidget {
                     }),
                 TextFormField(
                     decoration: const InputDecoration(
-                        labelText: "Medication List URL",
-                        icon: Icon(Icons.link)),
-                    controller: medrequesturlController,
+                        labelText: "Facility UserName", icon: Icon(Icons.link)),
+                    controller: facilityUserNameController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter Medication List URL';
+                        return 'Please enter Facility Username';
+                      }
+                      return null;
+                    }),
+                TextFormField(
+                    decoration: const InputDecoration(
+                        labelText: "Facility PassWord", icon: Icon(Icons.link)),
+                    controller: facilityPassWordController,
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter Facility Password';
                       }
                       return null;
                     }),
@@ -111,7 +138,11 @@ class FacilityDetail extends StatelessWidget {
                                 (this.facilityObj.patientidurl !=
                                     patientidurlController.text) ||
                                 (this.facilityObj.medrequesturl !=
-                                    medrequesturlController.text);
+                                    medrequesturlController.text) ||
+                                (this.facilityObj.facilityUserName !=
+                                    facilityUserNameController.text) ||
+                                (this.facilityObj.facilityPassWord !=
+                                    facilityPassWordController.text);
 
                             if (hasChanged) {
                               Facility newFacilityObj = Facility(
@@ -119,7 +150,9 @@ class FacilityDetail extends StatelessWidget {
                                   authenticationurlController.text,
                                   medrequesturlController.text,
                                   patientidurlController.text,
-                                  patientidentifierController.text);
+                                  patientidentifierController.text,
+                                  facilityUserNameController.text,
+                                  facilityPassWordController.text);
 
                               facilitiesListObj
                                   .setFacilites(

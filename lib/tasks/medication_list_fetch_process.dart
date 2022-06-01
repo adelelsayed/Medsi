@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'dart:convert';
 
 import 'package:medsi/http_utils/http_funs.dart';
@@ -25,28 +23,27 @@ class MedicationListProcess {
   static Future<void> getPatientId(
       String patientUrl, String patientIdentifier, String facilityKey) async {
     try {
-      MedsiHttp patientRequest = MedsiHttp(
-          Uri.parse(patientUrl + patientIdentifier), {}, (ajaxResponse1) {
-        if (ajaxResponse1.statusCode == 200) {
-          Map<String, dynamic> patDataMap = json.decode(ajaxResponse1.body);
-          FHIRBundle patientBundle = FHIRBundle(patDataMap);
+      medsiStorage.read(key: "Facilities").then((Facilitiesvalue) {
+        List<dynamic> FacilitiesMap =
+            List<dynamic>.from(json.decode(Facilitiesvalue.toString()));
+        Map<String, dynamic> currentFacility = FacilitiesMap.firstWhere(
+            (element) =>
+                Map<String, dynamic>.from(element)["name"] == facilityKey);
 
-          patientBundle.validate().then((val) {
-            if ((patientBundle.isvalid) &&
-                (List.from(patDataMap["entry"]).length == 1)) {
-              FHIRPatientRequest PatientRequest =
-                  FHIRPatientRequest(patDataMap["entry"][0]);
-              PatientRequest.validate().then((value) {
-                if (PatientRequest.isvalid) {
-                  String patientId = patDataMap["entry"][0]["resource"]["id"];
-
-                  medsiStorage.read(key: "Facilities").then((Facilitiesvalue) {
-                    List<dynamic> FacilitiesMap = List<dynamic>.from(
-                        json.decode(Facilitiesvalue.toString()));
-                    Map<String, dynamic> currentFacility =
-                        FacilitiesMap.firstWhere((element) =>
-                            Map<String, dynamic>.from(element)["name"] ==
-                            facilityKey);
+        MedsiHttp patientRequest = MedsiHttp(
+            Uri.parse(patientUrl + patientIdentifier),
+            {"Token": currentFacility["Token"]}, (ajaxResponse1) {
+          if (ajaxResponse1.statusCode == 200) {
+            Map<String, dynamic> patDataMap = json.decode(ajaxResponse1.body);
+            FHIRBundle patientBundle = FHIRBundle(patDataMap);
+            patientBundle.validate().then((val) {
+              if ((patientBundle.isvalid) &&
+                  (List.from(patDataMap["entry"]).length == 1)) {
+                FHIRPatientRequest PatientRequest =
+                    FHIRPatientRequest(patDataMap["entry"][0]);
+                PatientRequest.validate().then((value) {
+                  if (PatientRequest.isvalid) {
+                    String patientId = patDataMap["entry"][0]["resource"]["id"];
 
                     currentFacility["patientId"] = patientId;
                     FacilitiesMap.removeWhere((element) =>
@@ -56,20 +53,21 @@ class MedicationListProcess {
 
                     medsiStorage.write(
                         key: "Facilities", value: json.encode(FacilitiesMap));
-                  });
-                } else {
-                  log(PatientRequest.ErrorMessage.toString());
-                }
-              });
-            } else {
-              log(patientBundle.ErrorMessage.toString());
-            }
-          });
-        } else {
-          log("error fetching patient id");
-        }
+                  } else {
+                    log(PatientRequest.ErrorMessage.toString());
+                  }
+                });
+              } else {
+                log(patientBundle.ErrorMessage.toString());
+              }
+            });
+          } else {
+            log(ajaxResponse1.statusCode.toString());
+            log("error fetching patient id");
+          }
+        });
+        patientRequest.get();
       });
-      patientRequest.get();
     } catch (e) {}
   }
 
@@ -121,7 +119,7 @@ class MedicationListProcess {
           MedsiHttp medRequest = MedsiHttp(
               Uri.parse(facility["medrequesturl"].toString() +
                   facility["patientId"].toString()),
-              {}, (ajaxResponse) {
+              {"Token": facility["Token"]}, (ajaxResponse) {
             if (ajaxResponse.statusCode == 200) {
               Map<String, dynamic> dataMap = json.decode(ajaxResponse.body);
               Map<String, dynamic> convertedDataMap = {};
@@ -163,7 +161,7 @@ class MedicationListProcess {
                 });
               });
             } else {
-              log(ajaxResponse.toString());
+              log(ajaxResponse.statusCode.toString());
             }
           });
 

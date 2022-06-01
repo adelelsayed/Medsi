@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:developer';
+import 'dart:convert';
 import 'package:intl/intl.dart';
 
 import 'package:medsi/models/notification_model.dart';
@@ -8,6 +9,8 @@ import 'package:medsi/models/storage_utils.dart';
 import 'package:medsi/provider_utils/medslist_provider.dart';
 import 'package:medsi/provider_utils/frequency_provider.dart';
 import 'package:medsi/models/frequency.dart';
+import 'package:medsi/provider_utils/medication_provider.dart';
+import 'package:medsi/models/facility_model.dart';
 
 class AdministrationListProcess {
   List<Map<String, DateTime>> currentAdministrationList = [];
@@ -31,7 +34,7 @@ class AdministrationListProcess {
     AdministrationListProcess currentAdministrationListProcess =
         AdministrationListProcess();
 
-    currentAdministrationListProcess.getNextIntervalAdministrations();
+    await currentAdministrationListProcess.getNextIntervalAdministrations();
 
     await establishNotificationSettings().then((value) {
       for (var item
@@ -46,12 +49,14 @@ class AdministrationListProcess {
     });
   }
 
-  getNextIntervalAdministrations() {
+  getNextIntervalAdministrations() async {
     final FrequencyProvider FrequencyObjList = FrequencyProvider();
     FrequencyObjList.readFreqListIntoFreqObj(notify_listeners: false);
 
     MedicationList currentMedicationList = MedicationList();
-    currentMedicationList.getMedList(notify_listeners: false).then((value) {
+    await currentMedicationList
+        .getMedList(notify_listeners: false)
+        .then((value) {
       for (var medItem in currentMedicationList.MedList) {
         //find frequency object of medication.
 

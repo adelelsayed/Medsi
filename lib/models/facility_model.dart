@@ -12,14 +12,24 @@ class Facility {
   String medrequesturl = "";
   String patientidurl = "";
   String patientidentifier = "";
+  String facilityUserName = "";
+  String facilityPassWord = "";
 
-  Facility(String pname, String pauthenticationurl, String pmedrequesturl,
-      String ppatientidurl, String ppatientidentifier) {
+  Facility(
+      String pname,
+      String pauthenticationurl,
+      String pmedrequesturl,
+      String ppatientidurl,
+      String ppatientidentifier,
+      String pfacilityUserName,
+      String pfacilityPassWord) {
     this.authenticationurl = pauthenticationurl;
     this.medrequesturl = pmedrequesturl;
     this.name = pname;
     this.patientidentifier = ppatientidentifier;
     this.patientidurl = ppatientidurl;
+    this.facilityUserName = pfacilityUserName;
+    this.facilityPassWord = pfacilityPassWord;
   }
 
   static Future<bool> facilityStillExists(String targetName) async {

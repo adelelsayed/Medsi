@@ -1,6 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
+
+import 'package:medsi/models/system_settings.dart';
 
 //secure storage
 const FlutterSecureStorage medsiStorage = FlutterSecureStorage();
@@ -170,6 +171,5 @@ void runInitialStorage() async {
         }
       ]));
 
-  medsiStorage.write(key: "AdministrationList_intervalMinutes", value: "5");
-  medsiStorage.write(key: "MedicationListProcess_intervalMinutes", value: "5");
+  Settings.setSystemIntervals(1, 5, 60);
 }

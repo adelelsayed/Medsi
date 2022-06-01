@@ -13,7 +13,7 @@ class MedicationAndroid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size MQuery = MediaQuery.of(context).size;
-    final DateFormat formatter = DateFormat("d-M-yy H:m:ss");
+    final DateFormat formatter = DateFormat("d-M-yy hh:mm:ss");
     final MedicationItem = Provider.of<MedicationProvider>(context);
     final FrequencyObjList = Provider.of<FrequencyProvider>(context).freqItems;
     //find frequency object of medication.

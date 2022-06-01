@@ -20,16 +20,27 @@ class MedicationList with ChangeNotifier {
     Map<String, dynamic> ListOfMedsConv =
         Map<String, dynamic>.from(ListOfMedsConvi);
 
-    List<MedicationProvider> holder = [];
+    await MedicationList.parseMedsList(ListOfMedsConv).then((value) {
+      this.MedList = value;
+    });
 
+    if (notify_listeners) {
+      notifyListeners();
+    }
+  }
+
+  static Future<List<MedicationProvider>> parseMedsList(
+      var ListOfMedsConv) async {
+    List<MedicationProvider> holder = [];
     if (ListOfMedsConv.isNotEmpty) {
-      ListOfMedsConv.forEach((k, facility) {
+      for (dynamic facility in ListOfMedsConv.values) {
         facility = Map<String, Object>.from(facility);
         if (facility.isNotEmpty &&
             facility.containsKey("Facility") &&
             facility.containsKey("TimeOfQuery") &&
             facility.containsKey("MedsList")) {
-          Facility.facilityStillExists(facility["Facility"]).then((valuebool) {
+          await Facility.facilityStillExists(facility["Facility"])
+              .then((valuebool) {
             if (valuebool) {
               Map<String, dynamic> medsList =
                   Map<String, dynamic>.from(facility["MedsList"]);
@@ -61,12 +72,8 @@ class MedicationList with ChangeNotifier {
             }
           });
         }
-      });
-      this.MedList = holder;
-
-      if (notify_listeners) {
-        notifyListeners();
       }
     }
+    return holder;
   }
 }

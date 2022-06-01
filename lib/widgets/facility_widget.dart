@@ -47,7 +47,7 @@ class FacilityWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 IconButton(
-                  onPressed: () {
+                  onPressed: () async {
                     MedicationListProcess.getPatientId(facilityObj.patientidurl,
                         facilityObj.patientidentifier, facilityObj.name);
                   },
