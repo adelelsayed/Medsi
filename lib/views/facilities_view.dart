@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:medsi/logger/logger.dart';
 import 'package:medsi/models/facility_model.dart';
+import 'package:medsi/widgets/system_settings_widget.dart';
 import 'package:medsi/views/medication_list_view.dart';
 import 'package:medsi/widgets/common_widgets.dart';
 import 'package:medsi/views/logon_view.dart';
@@ -25,6 +26,10 @@ class FacilitiesView extends StatelessWidget {
           appBar: AppBar(
             title: const Text("Medsi"),
             actions: [
+              IconButton(
+                  onPressed: (() => Navigator.of(context)
+                      .pushReplacementNamed(SystemSettingsWidget.routeName)),
+                  icon: const Icon(Icons.settings)),
               IconButton(
                   onPressed: () {
                     Navigator.of(context)

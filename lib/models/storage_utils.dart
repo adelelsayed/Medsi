@@ -171,5 +171,12 @@ void runInitialStorage() async {
         }
       ]));
 
-  Settings.setSystemIntervals(1, 5, 60);
+  Settings.setSystemIntervals(
+      Settings(
+          administrationListIntervalMinutes: 1,
+          medicationListProcessIntervalMinutes: 5,
+          logonProcessIntervalMinutes: 60),
+      1,
+      5,
+      60);
 }

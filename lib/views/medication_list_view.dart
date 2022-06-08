@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:medsi/views/facilities_view.dart';
 import 'dart:io';
 
+import 'package:medsi/views/facilities_view.dart';
+import 'package:medsi/widgets/system_settings_widget.dart';
 import 'package:medsi/widgets/medication_list_widget.dart';
 import 'package:medsi/widgets/common_widgets.dart';
 import 'package:medsi/widgets/error_widget.dart';
@@ -18,34 +19,27 @@ class MedicationListView extends StatelessWidget {
       Widget MedsiList = Scaffold(
           appBar: MedsiAppBar, body: const Text("UnSupported Platform!"));
 
-      if (Platform.isAndroid) {
-        MedsiList = Scaffold(
-            appBar: AppBar(
-              title: Text("Medsi"),
-              actions: [
-                IconButton(
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushReplacementNamed(FacilitiesView.routeName);
-                    },
-                    icon: const Icon(Icons.local_hospital)),
-                IconButton(
-                    onPressed: (() => Navigator.of(context)
-                        .pushReplacementNamed(MedsiLogonView.routeName)),
-                    icon: const Icon(Icons.logout))
-              ],
-            ),
-            body: MedicationListAndroid());
-      } else if (Platform.isIOS) {
-        MedsiList = CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-                middle: const Text('Medsi'),
-                trailing: IconButton(
-                    onPressed: (() => Navigator.of(context)
-                        .pushReplacementNamed(MedsiLogonView.routeName)),
-                    icon: const Icon(CupertinoIcons.arrow_left_circle))),
-            child: MedicationListIOS());
-      }
+      MedsiList = Scaffold(
+          appBar: AppBar(
+            title: Text("Medsi"),
+            actions: [
+              IconButton(
+                  onPressed: (() => Navigator.of(context)
+                      .pushReplacementNamed(SystemSettingsWidget.routeName)),
+                  icon: const Icon(Icons.settings)),
+              IconButton(
+                  onPressed: () {
+                    Navigator.of(context)
+                        .pushReplacementNamed(FacilitiesView.routeName);
+                  },
+                  icon: const Icon(Icons.local_hospital)),
+              IconButton(
+                  onPressed: (() => Navigator.of(context)
+                      .pushReplacementNamed(MedsiLogonView.routeName)),
+                  icon: const Icon(Icons.logout))
+            ],
+          ),
+          body: MedicationListAndroid());
 
       return MedsiList;
     } catch (eError) {

@@ -14,7 +14,8 @@ import 'package:medsi/tasks/background_handle.dart';
 import 'package:medsi/views/medication_list_view.dart';
 import 'package:medsi/views/facilities_view.dart';
 import 'package:medsi/widgets/facility_detail.dart';
-import 'package:medsi/models/facility_model.dart';
+import 'package:medsi/widgets/system_settings_widget.dart';
+import 'package:medsi/models/system_settings.dart';
 
 MedicationList MedicationListObj = MedicationList();
 
@@ -44,11 +45,18 @@ class MyApp extends StatelessWidget {
       MedsiLogonView.routeName: (context) => MedsiLogonView(),
       FacilitiesView.routeName: (context) => FacilitiesView(),
       FacilityDetail.routeName: (context) => FacilityDetail(),
+      SystemSettingsWidget.routeName: (context) => SystemSettingsWidget(),
     };
 
     Auth AuthObj = Auth();
     FacilitiesProvider FacilitiesObj = FacilitiesProvider();
     FacilitiesObj.getFacilites();
+
+    Settings settingObj = Settings(
+        administrationListIntervalMinutes: 5,
+        medicationListProcessIntervalMinutes: 5,
+        logonProcessIntervalMinutes: 60);
+    settingObj.getSystemIntervalsInstance();
 
     MultiProvider retVal = MultiProvider(
       providers: [
@@ -60,6 +68,7 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider.value(value: FrequencyProviderObj),
         ChangeNotifierProvider.value(value: FacilitiesObj),
+        ChangeNotifierProvider.value(value: settingObj)
       ],
       child: MaterialApp(
         title: 'Medsi',
